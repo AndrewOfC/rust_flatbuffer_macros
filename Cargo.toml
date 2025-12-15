@@ -1,0 +1,10 @@
+[package]
+name = "flatbuffer_macros"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+flatbuffers = "25.9.23"
+paste = "1.0.15"
+[build-dependencies]
+flatbuffers-build = "0.2.3+flatc-25.2.10"
