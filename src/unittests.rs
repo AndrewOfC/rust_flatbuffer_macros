@@ -11,7 +11,7 @@ mod tests {
     pub fn test_existing() {
         let mut builder = flatbuffers::FlatBufferBuilder::new();
         let result : u64 = 1 as u64;
-        let multiplyer = 2 as u32;
+        let multiplier = 2 as u32;
         let multiplicand = 3 as u32;
         let buf = build_request_buffer!(&mut builder, MultiplyRequest, multiplicand=2, multiplier=3) ;
     

@@ -49,18 +49,17 @@ macro_rules! build_flatbuffer {
         } ;
         $typ::create($builder, &args)
         } }
-    }
+    } ;
 
     ($builder:expr, $typ:ident, $($field:ident),* ) => {
         {
         paste::paste! {
         let args = [<$typ Args>] {
             $($field,)*
-        } ;i
+        } ;
         $typ::create($builder, &args)
         } }
-    }
-
+    } ;
 }
 
 #[macro_export]
@@ -86,7 +85,7 @@ macro_rules! build_request_buffer {
         $builder.finish_size_prefixed(msg, None);
             $builder.finished_data()
         }
-    }
+    } ;
 
     ($builder:expr, $bodytype:ident, $($field:ident),* ) => {
         {
@@ -100,7 +99,34 @@ macro_rules! build_request_buffer {
             $builder.finished_data()
         }
     }
-
-
-
 }
+
+#[macro_export]
+macro_rules! build_response_buffer {
+    ($builder:expr, $bodytype:ident, $($field:ident = $value:expr),* ) => {
+        {
+            let body = build_flatbuffer!($builder, $bodytype, $($field = $value),* );
+            let args = ResponseMessageArgs {
+                response_type: Response::$bodytype,
+                response: Some(body.as_union_value()),
+            } ;
+            let msg = ResponseMessage::create($builder, &args) ;
+            $builder.finish_size_prefixed(msg, None);
+            $builder.finished_data()
+        }
+    } ;
+
+    ($builder:expr, $bodytype:ident, $($field:ident),* ) => {
+        {
+            let body = build_flatbuffer!($builder, $bodytype, $($field),* );
+            let args = ResponseMessageArgs {
+                response_type: Response::$bodytype,
+                response: Some(body.as_union_value()),
+            } ;
+            let msg = ResponseMessage::create($builder, &args) ;
+            $builder.finish_size_prefixed(msg, None);
+            $builder.finished_data()
+        }
+    }
+}
+
