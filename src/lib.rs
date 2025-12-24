@@ -1,3 +1,4 @@
+#![no_std]
 mod unittests;
 #[path="./fb_ops/mod.rs"]
 mod fbserver_operations;

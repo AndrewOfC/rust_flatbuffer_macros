@@ -32,12 +32,12 @@ fn flatbuffers_schemas() -> Result<(), String> {
     // Compile the schemas.
     // NOTE: For multiple schemas, the order can matter if there are dependencies.
     // For simple cases, iterating over the directory contents is often sufficient.
-    BuilderOptions::new_with_files(&fbs_files)
-        .set_compiler(compiler)
-        .set_output_path("./src/fb_ops")
-        .add_flatc_arguments(&["--reflect-types", "--rust-module-root-file"])
-        .compile()
-        .expect("FlatBuffers compilation failed");
+    // BuilderOptions::new_with_files(&fbs_files)
+    //     .set_compiler(compiler)
+    //     .set_output_path("./src/fb_ops")
+    //     .add_flatc_arguments(&["--reflect-types", "--rust-module-root-file"])
+    //     .compile()
+    //     .expect("FlatBuffers compilation failed");
 
 
     Ok(())
