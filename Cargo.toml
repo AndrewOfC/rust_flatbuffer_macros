@@ -7,4 +7,4 @@ edition = "2024"
 flatbuffers = { version ="25.12.19", default-features = false }
 paste = "1.0.15"
 [build-dependencies]
-flatbuffers-build = "0.2.3+flatc-25.2.10"
+flatbuffers-build = "0.2.4+flatc-25.12.19"
