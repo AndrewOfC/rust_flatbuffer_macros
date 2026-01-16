@@ -131,3 +131,26 @@ macro_rules! build_response_buffer {
     }
 }
 
+
+#[macro_export]
+macro_rules! union_values {
+    ($union_type:ident) => {
+        fn write_union_values() {
+            let out_dir = env::var("OUT_DIR").expect("OUT_DIR not set");
+            let dest_path = Path::new(&out_dir).join("Request_order.dat");
+            let mut file = File::create(&dest_path).expect("Failed to create Request_order.dat");
+
+            let mut i = 0;
+            loop {
+                let o  = $union_type(i) ;
+                match o.variant_name() {
+                    Some(name) => {
+                        writeln!(file, "{}:{}", i, name).expect("Failed to write to file");
+                    }
+                    None => break
+                }
+                i += 1;
+            }
+        }
+    };
+}
