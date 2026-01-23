@@ -1,4 +1,9 @@
 #![no_std]
+
+use paste;
+
+extern crate std;
+
 mod unittests;
 #[path="./fb_ops/mod.rs"]
 mod fbserver_operations;
@@ -135,21 +140,29 @@ macro_rules! build_response_buffer {
 #[macro_export]
 macro_rules! union_values {
     ($union_type:ident) => {
-        fn write_union_values() {
-            let out_dir = env::var("OUT_DIR").expect("OUT_DIR not set");
-            let dest_path = Path::new(&out_dir).join("Request_order.dat");
-            let mut file = File::create(&dest_path).expect("Failed to create Request_order.dat");
+        paste::paste! {
+            pub fn [<write_ $union_type _values>]() {
+                use std::env;
+                use std::fs::File;
+                use std::io::Write;
+                use std::path::Path;
 
-            let mut i = 0;
-            loop {
-                let o  = $union_type(i) ;
-                match o.variant_name() {
-                    Some(name) => {
-                        writeln!(file, "{}:{}", i, name).expect("Failed to write to file");
+                let out_dir = env::var("OUT_DIR").expect("OUT_DIR not set");
+                let filename = format!("{}_order.dat", stringify!($union_type));
+                let dest_path = Path::new(&out_dir).join(filename);
+                let mut file = File::create(&dest_path).expect(&format!("Failed to create {}_order.dat", stringify!($union_type)));
+
+                let mut i = 0;
+                loop {
+                    let o = $union_type(i);
+                    match o.variant_name() {
+                        Some(name) => {
+                            writeln!(file, "{}:{}", i, name).expect("Failed to write to file");
+                        }
+                        None => break
                     }
-                    None => break
+                    i += 1;
                 }
-                i += 1;
             }
         }
     };
