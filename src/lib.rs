@@ -47,7 +47,18 @@ mod fbserver_operations;
  */
 #[macro_export]
 macro_rules! build_flatbuffer {
-    ($builder:expr, $typ:ident, $($field:ident = $value:expr),* ) => {
+
+    ($builder:expr, $typ:ident) => {
+        {
+
+            paste::paste! {
+                let args = [<$typ Args>]::default() ;
+                $typ::create($builder, &args)
+            }
+        }
+    } ;
+
+($builder:expr, $typ:ident, $($field:ident = $value:expr),* ) => {
         {
         paste::paste! {
         let args = [<$typ Args>] {
@@ -80,6 +91,20 @@ macro_rules! build_flatbuffer_macro {
 
 #[macro_export]
 macro_rules! build_request_buffer {
+
+    ($builder:expr, $bodytype:ident) => {
+        {
+            let body = build_flatbuffer!($builder, $bodytype) ;
+            let args = RequestMessageArgs {
+                request_type: Request::$bodytype,
+                request: Some(body.as_union_value()),
+            } ;
+            let msg = RequestMessage::create($builder, &args) ;
+        $builder.finish_size_prefixed(msg, None);
+            $builder.finished_data()
+        }
+    } ;
+
     ($builder:expr, $bodytype:ident, $($field:ident = $value:expr),* ) => {
         {
             let body = build_flatbuffer!($builder, $bodytype, $($field = $value),* );
