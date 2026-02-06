@@ -4,7 +4,7 @@ use flatbuffers_build::BuilderOptions;
 
 fn flatbuffers_schemas() -> Result<(), String> {
     // Specify the directory containing your .fbs files.
-    let schema_dir = Path::new("./flatbuffer_schemas");
+    let schema_dir = Path::new("./tests");
 
     // Tell Cargo to rerun the build script if any .fbs file in the
     // schemas directory is changed.
@@ -32,13 +32,12 @@ fn flatbuffers_schemas() -> Result<(), String> {
     // Compile the schemas.
     // NOTE: For multiple schemas, the order can matter if there are dependencies.
     // For simple cases, iterating over the directory contents is often sufficient.
-    // BuilderOptions::new_with_files(&fbs_files)
-    //     .set_compiler(compiler)
-    //     .set_output_path("./src/fb_ops")
-    //     .add_flatc_arguments(&["--reflect-types", "--rust-module-root-file"])
-    //     .compile()
-    //     .expect("FlatBuffers compilation failed");
-
+    BuilderOptions::new_with_files(&fbs_files)
+         .set_compiler(compiler)
+         .set_output_path("./tests/fb")
+         .add_flatc_arguments(&["--reflect-types", "--rust-module-root-file"])
+         .compile()
+         .expect("FlatBuffers compilation failed");
 
     Ok(())
 }

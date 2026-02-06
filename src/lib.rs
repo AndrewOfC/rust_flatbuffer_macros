@@ -1,15 +1,9 @@
 #![no_std]
 
-use paste;
-
 extern crate std;
 
-mod unittests;
-#[path="./fb_ops/mod.rs"]
-mod fbserver_operations;
-
 /**
- * Example:
+ * Example:./"
  * ```rust
  *  // given this struct:
  *  pub struct AddRequest {
@@ -17,9 +11,7 @@ mod fbserver_operations;
  *      pub b: u32,
  *  }
  * ```
- *   Build a flatbufferuse crate::util;
- * use paste::paste;
- *
+ *   Build a flatbuffer
  *
  * ```rust
  * let args = AddRequestArgs {
@@ -48,9 +40,8 @@ mod fbserver_operations;
 #[macro_export]
 macro_rules! build_flatbuffer {
 
-    ($builder:expr, $typ:ident) => {
+   ($builder:expr, $typ:ident) => {
         {
-
             paste::paste! {
                 let args = [<$typ Args>]::default() ;
                 $typ::create($builder, &args)
@@ -63,6 +54,7 @@ macro_rules! build_flatbuffer {
         paste::paste! {
         let args = [<$typ Args>] {
             $($field: $value,)*
+            ..[<$typ Args>]::default()
         } ;
         $typ::create($builder, &args)
         } }
@@ -73,94 +65,56 @@ macro_rules! build_flatbuffer {
         paste::paste! {
         let args = [<$typ Args>] {
             $($field,)*
+            ..[<$typ Args>]::default()
         } ;
         $typ::create($builder, &args)
         } }
     } ;
 }
 
-#[macro_export]
-macro_rules! build_flatbuffer_macro {
-    ($root_type:ident, $body_type:ident) => {
-        #[macro_export]
-        macro_rules!  {
-
-        }
-    }
-}
 
 #[macro_export]
-macro_rules! build_request_buffer {
+macro_rules! flatbuffer_builderbuilder {
+    ($DOLLAR:tt $root:ident, $union:ident) => {
+        paste::paste! {
+            macro_rules! [<build_ $root _buffer>]
+                {
+                    ($DOLLAR builder:expr, $bodytype:ident) => {{
+                        let body = build_flatbuffer!($builder, $bodytype) ;
+                        let args = [ <$root Args> ] {
+                            [ <$union:snake _type> ]: $union::$bodytype,
+                            [<$union:snake>]: Some(body.as_union_value())
+                        } ;
+                        let msg = $root::create($builder, &args) ;
+                        $builder.finish_size_prefixed(msg, None);
+                        $builder.finished_data()
+                        }} ;
 
-    ($builder:expr, $bodytype:ident) => {
-        {
-            let body = build_flatbuffer!($builder, $bodytype) ;
-            let args = RequestMessageArgs {
-                request_type: Request::$bodytype,
-                request: Some(body.as_union_value()),
-            } ;
-            let msg = RequestMessage::create($builder, &args) ;
-        $builder.finish_size_prefixed(msg, None);
-            $builder.finished_data()
-        }
-    } ;
+                    ($DOLLAR builder:expr, $bodytype:ident, $DOLLAR($DOLLAR field:ident = $DOLLAR value:expr),* ) => {{
+                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($DOLLAR field = $DOLLAR value),* );
+                        let args = [ <$root Args> ] {
+                            [ <$union:snake _type> ]: $union::$bodytype,
+                            [<$union:snake>]: Some(body.as_union_value())
+                        } ;
+                        let msg = $root::create($builder, &args) ;
+                        $builder.finish_size_prefixed(msg, None);
+                        $builder.finished_data()
+                    }} ;
 
-    ($builder:expr, $bodytype:ident, $($field:ident = $value:expr),* ) => {
-        {
-            let body = build_flatbuffer!($builder, $bodytype, $($field = $value),* );
-            let args = RequestMessageArgs {
-                request_type: Request::$bodytype,
-                request: Some(body.as_union_value()),
-            } ;
-            let msg = RequestMessage::create($builder, &args) ;
-        $builder.finish_size_prefixed(msg, None);
-            $builder.finished_data()
-        }
-    } ;
-
-    ($builder:expr, $bodytype:ident, $($field:ident),* ) => {
-        {
-            let body = build_flatbuffer!($builder, $bodytype, $($field),* );
-            let args = RequestMessageArgs {
-                request_type: Request::$bodytype,
-                request: Some(body.as_union_value()),
-            } ;
-            let msg = RequestMessage::create($builder, &args) ;
-        $builder.finish_size_prefixed(msg, None);
-            $builder.finished_data()
-        }
+                    ($DOLLAR builder:expr, $bodytype:ident, $DOLLAR($DOLLAR field:ident),* ) => {{
+                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($DOLLAR field),* );
+                        let args = [ <$root Args> ] {
+                            [ <$union:snake _type> ]: $union::$bodytype,
+                            [<$union:snake>]: Some(body.as_union_value())
+                        } ;
+                        let msg = $root::create($builder, &args) ;
+                        $builder.finish_size_prefixed(msg, None);
+                        $builder.finished_data()
+                    }} ;
+                }
+            }
     }
 }
-
-#[macro_export]
-macro_rules! build_response_buffer {
-    ($builder:expr, $bodytype:ident, $($field:ident = $value:expr),* ) => {
-        {
-            let body = build_flatbuffer!($builder, $bodytype, $($field = $value),* );
-            let args = ResponseMessageArgs {
-                response_type: Response::$bodytype,
-                response: Some(body.as_union_value()),
-            } ;
-            let msg = ResponseMessage::create($builder, &args) ;
-            $builder.finish_size_prefixed(msg, None);
-            $builder.finished_data()
-        }
-    } ;
-
-    ($builder:expr, $bodytype:ident, $($field:ident),* ) => {
-        {
-            let body = build_flatbuffer!($builder, $bodytype, $($field),* );
-            let args = ResponseMessageArgs {
-                response_type: Response::$bodytype,
-                response: Some(body.as_union_value()),
-            } ;
-            let msg = ResponseMessage::create($builder, &args) ;
-            $builder.finish_size_prefixed(msg, None);
-            $builder.finished_data()
-        }
-    }
-}
-
 
 #[macro_export]
 macro_rules! union_values {

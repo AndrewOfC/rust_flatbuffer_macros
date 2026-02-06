@@ -1,0 +1,33 @@
+namespace unittests ;
+
+table AddRequest {
+    addend_a: int32 ;
+    addend_b: int32 ;
+}
+
+table MultiplyRequest {
+    multiplicand: int32 ;
+    mutiplier: int32 ;
+}
+
+/// Case where struct is empty
+table UnhandledRequest {
+}
+
+table StringMessage {
+    s1: string;
+    s2: string;
+}
+
+union TestMessage {
+    AddRequest,
+    MultiplyRequest,
+    UnhandledRequest,
+    StringMessage,
+}
+
+table UnittestMessage {
+    test_message: TestMessage ; // Note fieldname must be same as field name in lowercase
+}
+
+root_type UnittestMessage ;
