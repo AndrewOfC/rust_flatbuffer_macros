@@ -1,6 +1,6 @@
+use flatbuffers_build::BuilderOptions;
 use std::env;
 use std::path::Path;
-use flatbuffers_build::BuilderOptions;
 
 fn flatbuffers_schemas() -> Result<(), String> {
     // Specify the directory containing your .fbs files.
@@ -33,11 +33,11 @@ fn flatbuffers_schemas() -> Result<(), String> {
     // NOTE: For multiple schemas, the order can matter if there are dependencies.
     // For simple cases, iterating over the directory contents is often sufficient.
     BuilderOptions::new_with_files(&fbs_files)
-         .set_compiler(compiler)
-         .set_output_path("./tests/fb")
-         .add_flatc_arguments(&["--reflect-types", "--rust-module-root-file"])
-         .compile()
-         .expect("FlatBuffers compilation failed");
+        .set_compiler(compiler)
+        .set_output_path("./tests/fb")
+        .add_flatc_arguments(&["--reflect-types", "--rust-module-root-file"])
+        .compile()
+        .expect("FlatBuffers compilation failed");
 
     Ok(())
 }

@@ -1,8 +1,6 @@
-
-# Overview 
-
-Macros to simplify building flatbuffers 
-
+[![Rust CI Build&Test](https://github.com/AndrewOfC/flatbuffer_macros/actions/workflows/ci-rust.yml/badge.svg)](https://github.com/AndrewOfC/flatbuffer_macros/actions/workflows/ci-rust.yml)
+# Overview
+Macros to simplify building [flatbuffers](https://flatbuffers.dev/) in [Rust](https://rust-lang.org/)
 ## Usage
 Given the schema:
 
@@ -26,9 +24,6 @@ table Message {
 }
 
 root_type UnittestMessage ;
-
-
-
 ```
 A typical construction would look like this:
 
@@ -48,7 +43,7 @@ fn build() {
             test_message_type: TestMessage::AddRequest,
             test_message: Some(body.as_union_value()),
         };
-        let msg = UnittestMessage::create((&mut builder), &args);
+        let msg = Message::create((&mut builder), &args);
         &mut builder.finish_size_prefixed(msg, None);
         let buf = &mut builder.finished_data() ;
 }
@@ -61,7 +56,7 @@ Instead:
 use flatbuffer_macros::{flatbuffer_builderbuilder, build_flatbuffer};
     
 // Constructs a macro to build the flatbuffer
-flatbuffer_builderbuilder!($ UnittestMessage, TestMessage) ; // note the $
+flatbuffer_builderbuilder!($ Message, TestMessage) ; // note the $
 
 fn build() {
     let buf = build_Message_buffer!(&mut builder, AddRequest, addend_a=1, addend_b=2) ;

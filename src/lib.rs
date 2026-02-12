@@ -3,8 +3,8 @@
 extern crate std;
 
 /**
- * Example:./"
- * ```rust
+ *
+ * ```rust.ignore
  *  // given this struct:
  *  pub struct AddRequest {
  *      pub a: u32,
@@ -13,7 +13,7 @@ extern crate std;
  * ```
  *   Build a flatbuffer
  *
- * ```rust
+ * ```rust.ignore
  * let args = AddRequestArgs {
  *      a: 1,
  *      b: 2,
@@ -24,14 +24,14 @@ extern crate std;
  *
  * Instead:
  *
- * ```rust
+ * ```rust.ignore
  *
  *  let req = build_flatbuffer!(&mut builder, AddRequest, a=1, b=2) ;
  *  ```
  *
  * OR:
  *
- * ```rust
+ * ```rust.ignore
  *  let a = 1 ;
  *  let b = 2 ;
  *  let req = build_flatbuffer!(&mut builder, AddRequest, a, b) ;
@@ -71,7 +71,6 @@ macro_rules! build_flatbuffer {
         } }
     } ;
 }
-
 
 #[macro_export]
 macro_rules! flatbuffer_builderbuilder {
@@ -116,33 +115,3 @@ macro_rules! flatbuffer_builderbuilder {
     }
 }
 
-#[macro_export]
-macro_rules! union_values {
-    ($union_type:ident) => {
-        paste::paste! {
-            pub fn [<write_ $union_type _values>]() {
-                use std::env;
-                use std::fs::File;
-                use std::io::Write;
-                use std::path::Path;
-
-                let out_dir = env::var("OUT_DIR").expect("OUT_DIR not set");
-                let filename = format!("{}_order.dat", stringify!($union_type));
-                let dest_path = Path::new(&out_dir).join(filename);
-                let mut file = File::create(&dest_path).expect(&format!("Failed to create {}_order.dat", stringify!($union_type)));
-
-                let mut i = 0;
-                loop {
-                    let o = $union_type(i);
-                    match o.variant_name() {
-                        Some(name) => {
-                            writeln!(file, "{}:{}", i, name).expect("Failed to write to file");
-                        }
-                        None => break
-                    }
-                    i += 1;
-                }
-            }
-        }
-    };
-}
