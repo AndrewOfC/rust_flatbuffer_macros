@@ -2,6 +2,7 @@
 name = "rust_flatbuffer_macros"
 version = "0.1.0"
 edition = "2024"
+license-file = "LICENSE"
 
 [dependencies]
 flatbuffers = { version ="25.12.19", default-features = false }

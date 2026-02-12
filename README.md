@@ -1,6 +1,11 @@
-[![Rust CI Build&Test](https://github.com/AndrewOfC/flatbuffer_macros/actions/workflows/ci-rust.yml/badge.svg)](https://github.com/AndrewOfC/flatbuffer_macros/actions/workflows/ci-rust.yml)
+[![Rust CI Build&Test](https://github.com/AndrewOfC/flatbuffer_macros/actions/workflows/ci-rust.yml/badge.svg?branch=master)](https://github.com/AndrewOfC/flatbuffer_macros/actions/workflows/ci-rust.yml)
 # Overview
 Macros to simplify building [flatbuffers](https://flatbuffers.dev/) in [Rust](https://rust-lang.org/)
+
+# License
+
+[MIT](./LICENSE)
+
 ## Usage
 Given the schema:
 
