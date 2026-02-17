@@ -191,3 +191,33 @@ flatbuffer_builderbuilder!($ Message, Payload);
 
 The $ is taken as the $DOLLAR token and the remaining parameters are taken in as 
 $root(root_type defined in the flatbuffer schema) and $union(the internal payload).
+This is done to assist the rust compiler is parsing the macro paramters that expand 
+variadic arguments:
+
+```rust
+macro_rules! flatbuffer_builderbuilder {
+    ($DOLLAR:tt $root:ident, $union:ident) => {
+        paste::paste! {
+            ($builder:expr, $bodytype:ident, $DOLLAR($field:ident),* ) => {{
+                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($field),* );
+                        let args = [ <$root Args> ] {
+                            [ <$union:snake _type> ]: $union::$bodytype,
+                            [<$union:snake>]: Some(body.as_union_value())
+                        } ;
+                        let msg = $root::create($builder, &args) ;
+                        $builder.finish_size_prefixed(msg, None);
+                        $builder.finished_data()
+                    }} ;
+        }
+    }
+}
+```
+
+If we don't use the $DOLLAR token we get the following error:
+```text
+   Compiling rust_flatbuffer_macros v0.1.0 (/Users/andrew/projects/rustserver2/rust_flatbuffer_macros)
+error: attempted to repeat an expression containing no syntax variables matched as repeating at this depth
+   --> /Users/andrew/projects/rustserver2/rust_flatbuffer_macros/src/lib.rs:123:55
+    |
+123 |                     ($builder:expr, $bodytype:ident, $($field:ident),* ) => {{
+```
