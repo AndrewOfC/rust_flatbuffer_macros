@@ -98,7 +98,7 @@ macro_rules! flatbuffer_builderbuilder {
         paste::paste! {
             macro_rules! [<build_ $root _buffer>]
                 {
-                    ($DOLLAR builder:expr, $bodytype:ident) => {{
+                    ($builder:expr, $bodytype:ident) => {{
                         let body = build_flatbuffer!($builder, $bodytype) ;
                         let args = [ <$root Args> ] {
                             [ <$union:snake _type> ]: $union::$bodytype,
@@ -109,8 +109,8 @@ macro_rules! flatbuffer_builderbuilder {
                         $builder.finished_data()
                         }} ;
 
-                    ($DOLLAR builder:expr, $bodytype:ident, $DOLLAR($DOLLAR field:ident = $DOLLAR value:expr),* ) => {{
-                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($DOLLAR field = $DOLLAR value),* );
+                    ($builder:expr, $bodytype:ident, $DOLLAR($field:ident = $value:expr),* ) => {{
+                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($field = $value),* );
                         let args = [ <$root Args> ] {
                             [ <$union:snake _type> ]: $union::$bodytype,
                             [<$union:snake>]: Some(body.as_union_value())
@@ -120,8 +120,8 @@ macro_rules! flatbuffer_builderbuilder {
                         $builder.finished_data()
                     }} ;
 
-                    ($DOLLAR builder:expr, $bodytype:ident, $DOLLAR($DOLLAR field:ident),* ) => {{
-                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($DOLLAR field),* );
+                    ($builder:expr, $bodytype:ident, $DOLLAR($field:ident),* ) => {{
+                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($field),* );
                         let args = [ <$root Args> ] {
                             [ <$union:snake _type> ]: $union::$bodytype,
                             [<$union:snake>]: Some(body.as_union_value())
