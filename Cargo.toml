@@ -7,6 +7,7 @@ license-file = "LICENSE"
 [dependencies]
 flatbuffers = { version ="25.12.19", default-features = false }
 paste = "1.0.15"
+[dev-dependencies]
 rand = "0.10.0"
 [build-dependencies]
 flatbuffers-build = "0.2.4+flatc-25.12.19"

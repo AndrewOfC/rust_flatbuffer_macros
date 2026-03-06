@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 // SPDX short identifier: MIT
-
+#![no_std]
 /**
  *
  * ```rust.ignore
