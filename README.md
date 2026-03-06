@@ -95,8 +95,8 @@ can be modified and expanded into
 
 ### Flatbuffer naming
 
-for a given flatbuffer struct 'AddRequest', the [flatc compiler](https://flatbuffers.dev/flatc/) will generate a struct named 'DataStructArgs'.
-To construct a flatbuffer representation of AddRequest, you allocate and populate a AddRequestArgs struct.
+For a given flatbuffer struct 'AddRequest', the [flatc compiler](https://flatbuffers.dev/flatc/) will generate a struct named 'AddRequestArgs'.
+To construct a flatbuffer representation of AddRequest, you allocate and populate an AddRequestArgs struct.
 
 ### Expansion
 
@@ -212,6 +212,8 @@ macro_rules! flatbuffer_builderbuilder {
     }
 }
 ```
+
+# Troubleshooting
 
 If we don't use the $DOLLAR token we get the following error:
 ```text
