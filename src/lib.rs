@@ -1,3 +1,4 @@
+#![no_std]
 // MIT License
 //
 // Copyright (c) 2026 Andrew Ellis Page
