@@ -27,10 +27,21 @@ table AddRequest {
     addend_b: int32 ;
 }
 
+table AddRequest4 {
+    addend_a: int32 ;
+    addend_b: int32 ;
+    addend_c: int32 ;
+    addend_d: int32 ;
+}
+
+
+
 table MultiplyRequest {
     multiplicand: int32 ;
     mutiplier: int32 ;
 }
+
+
 
 /// Case where struct is empty
 table UnhandledRequest {
@@ -43,6 +54,7 @@ table StringMessage {
 
 union TestMessage {
     AddRequest,
+    AddRequest4,
     MultiplyRequest,
     UnhandledRequest,
     StringMessage,
@@ -50,6 +62,8 @@ union TestMessage {
 
 table UnittestMessage {
     test_message: TestMessage ; // Note fieldname must be same as field name in lowercase
+    serialno: int32 ;
+    extradata: int32 ;
 }
 
 root_type UnittestMessage ;

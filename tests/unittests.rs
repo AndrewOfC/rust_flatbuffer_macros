@@ -31,12 +31,16 @@ mod tests {
     use rust_flatbuffer_macros::{build_flatbuffer, flatbuffer_builderbuilder};
 
     flatbuffer_builderbuilder!($ /* note the $ */ UnittestMessage, TestMessage);
+    
+    pub fn quickrand() -> i32 {
+        let mut rng = rand::rng();
+        rng.random_range(-1000..1000)
+    }
 
     #[test]
     pub fn test_fields_builder() {
-        let mut rng = rand::rng();
-        let a = rng.random_range(-1000..1000);
-        let b = rng.random_range(-1000..1000);
+        let a = quickrand();
+        let b = quickrand();
 
         let mut builder = flatbuffers::FlatBufferBuilder::new();
         let buf =
@@ -53,9 +57,8 @@ mod tests {
 
     #[test]
     pub fn test_localvars_builder() {
-        let mut rng = rand::rng();
-        let addend_a = rng.random_range(-1000..1000);
-        let addend_b = rng.random_range(-1000..1000);
+        let addend_a = quickrand();
+        let addend_b = quickrand();
 
         let mut builder = flatbuffers::FlatBufferBuilder::new();
 
@@ -99,4 +102,66 @@ mod tests {
         assert_eq!(payload.s1(), Some("foo"));
         assert_eq!(payload.s2(), Some("bar"));
     }
+
+    #[test]
+    pub fn test_4fields_builder() {
+        let mut builder = flatbuffers::FlatBufferBuilder::new();
+        let (addend_a, b, addend_c, d) = (quickrand(),quickrand(),quickrand(),quickrand());
+        let buf = build_UnittestMessage_buffer!(
+            &mut builder,
+            AddRequest4, addend_a, addend_b = b, addend_c, addend_d = d
+        );
+        let rootmessage = flatbuffers::root::<UnittestMessage>(&buf[4..]).unwrap();
+
+        assert!(rootmessage.test_message_type() == TestMessage::AddRequest4);
+        let payload = rootmessage.test_message_as_add_request_4().unwrap();
+
+        assert_eq!(payload.addend_a(), addend_a);
+        assert_eq!(payload.addend_b(), b);
+        assert_eq!(payload.addend_c(), addend_c);
+        assert_eq!(payload.addend_d(), d);
+
+        builder.reset();
+
+        /*
+         * test a different interspersing of fields
+         */
+        let (addend_a, b, c, addend_d) = (quickrand(),quickrand(),quickrand(),quickrand());
+        let buf = build_UnittestMessage_buffer!(
+            &mut builder,
+            AddRequest4,
+            addend_a, addend_b = b, addend_c=c, addend_d) ;
+
+        let rootmessage = flatbuffers::root::<UnittestMessage>(&buf[4..]).unwrap();
+
+        assert!(rootmessage.test_message_type() == TestMessage::AddRequest4);
+        let payload = rootmessage.test_message_as_add_request_4().unwrap();
+
+        assert_eq!(payload.addend_a(), addend_a);
+        assert_eq!(payload.addend_b(), b);
+        assert_eq!(payload.addend_c(), c);
+        assert_eq!(payload.addend_d(), addend_d);
+    }
+
+    #[test]
+    fn test_addtional_root_fields() {
+        let addend_a = quickrand();
+        let addend_b = quickrand();
+        let (serialno, extradata) = (quickrand(), quickrand());
+
+        let mut builder = flatbuffers::FlatBufferBuilder::new();
+
+        let buf = build_UnittestMessage_buffer!(&mut builder, serialno=serialno, extradata => AddRequest, addend_a, addend_b);
+
+        let root_message = flatbuffers::root::<UnittestMessage>(&buf[4..]).unwrap();
+        assert!(root_message.serialno() == serialno);
+        assert!(root_message.extradata() == extradata);
+
+        assert!(root_message.test_message_type() == TestMessage::AddRequest);
+
+        let payload = root_message.test_message_as_add_request().unwrap();
+        assert!(payload.addend_a() == addend_a);
+        assert!(payload.addend_b() == addend_b);
+    }
+
 } // mod

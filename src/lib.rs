@@ -1,3 +1,4 @@
+#![no_std]
 // MIT License
 //
 // Copyright (c) 2026 Andrew Ellis Page
@@ -60,7 +61,7 @@
 #[macro_export]
 macro_rules! build_flatbuffer {
 
-   ($builder:expr, $typ:ident) => {
+   ($builder:expr, $typ:ty) => {
         {
             paste::paste! {
                 let args = [<$typ Args>]::default() ;
@@ -69,22 +70,11 @@ macro_rules! build_flatbuffer {
         }
     } ;
 
-($builder:expr, $typ:ident, $($field:ident = $value:expr),* ) => {
+    ($builder:expr, $typ:ty, $($field:ident $(= $value:expr)?),+ ) => {
         {
         paste::paste! {
         let args = [<$typ Args>] {
-            $($field: $value,)*
-            ..[<$typ Args>]::default()
-        } ;
-        $typ::create($builder, &args)
-        } }
-    } ;
-
-    ($builder:expr, $typ:ident, $($field:ident),* ) => {
-        {
-        paste::paste! {
-        let args = [<$typ Args>] {
-            $($field,)*
+            $($field $(: $value)?,)*
             ..[<$typ Args>]::default()
         } ;
         $typ::create($builder, &args)
@@ -94,7 +84,7 @@ macro_rules! build_flatbuffer {
 
 #[macro_export]
 macro_rules! flatbuffer_builderbuilder {
-    ($DOLLAR:tt $root:ident, $union:ident) => {
+    ($DOLLAR:tt $root:ty, $union:ty) => {
         paste::paste! {
             macro_rules! [<build_ $root _buffer>]
                 {
@@ -102,34 +92,39 @@ macro_rules! flatbuffer_builderbuilder {
                         let body = build_flatbuffer!($builder, $bodytype) ;
                         let args = [ <$root Args> ] {
                             [ <$union:snake _type> ]: $union::$bodytype,
-                            [<$union:snake>]: Some(body.as_union_value())
+                            [<$union:snake>]: Some(body.as_union_value()),
+                            ..[<$root Args>]::default()
                         } ;
                         let msg = $root::create($builder, &args) ;
                         $builder.finish_size_prefixed(msg, None);
                         $builder.finished_data()
                         }} ;
 
-                    ($builder:expr, $bodytype:ident, $DOLLAR($field:ident = $value:expr),* ) => {{
-                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($field = $value),* );
+                    ($builder:expr, $bodytype:ident, $DOLLAR($field:ident $DOLLAR(= $value:expr)?),+ ) => {{
+                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($field $DOLLAR(= $value)?),+ );
                         let args = [ <$root Args> ] {
                             [ <$union:snake _type> ]: $union::$bodytype,
-                            [<$union:snake>]: Some(body.as_union_value())
+                            [<$union:snake>]: Some(body.as_union_value()),
+                            ..[<$root Args>]::default()
                         } ;
                         let msg = $root::create($builder, &args) ;
                         $builder.finish_size_prefixed(msg, None);
                         $builder.finished_data()
                     }} ;
 
-                    ($builder:expr, $bodytype:ident, $DOLLAR($field:ident),* ) => {{
-                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($field),* );
+                    ($builder:expr, $DOLLAR($rootfield:ident $DOLLAR(= $rootvalue:expr)?),* => $bodytype:ident, $DOLLAR($field:ident $DOLLAR(= $value:expr)?),+ ) => {{
+                        let body = build_flatbuffer!($builder, $bodytype, $DOLLAR($field $DOLLAR(= $value)?),+ );
                         let args = [ <$root Args> ] {
                             [ <$union:snake _type> ]: $union::$bodytype,
-                            [<$union:snake>]: Some(body.as_union_value())
+                            [<$union:snake>]: Some(body.as_union_value()),
+                            $DOLLAR($rootfield $DOLLAR(: $rootvalue)?,)*
+                            ..[<$root Args>]::default()
                         } ;
                         let msg = $root::create($builder, &args) ;
                         $builder.finish_size_prefixed(msg, None);
                         $builder.finished_data()
                     }} ;
+
                 }
             }
     }
