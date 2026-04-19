@@ -13,7 +13,7 @@ A useful Rust macro that defines other Rust macros.
 In cargo.toml
 ```toml
 [dependencies]
-rust_flatbuffer_macros = { git = "https://github.com/andrewofc/rust_flatbuffer_macros" }
+rust_flatbuffer_macros = "1.1.0"
 ```
 
 # FlatBuffers
@@ -169,8 +169,8 @@ Which expands to:
 ```rust
  
         let args = AddRequestArgs {
-            addend_a: a,
-            addend_b: b,
+            addend_a,
+            addend_b,
             ..AddRequestArgs::default()
         };
         AddRequest::create((&mut builder), &args)

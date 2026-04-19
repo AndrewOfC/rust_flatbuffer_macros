@@ -21,29 +21,24 @@
 # SOFTWARE.
 #
 # SPDX short identifier: MIT
-[package]
-name = "rust_flatbuffer_macros"
-version = "1.1.0"
-edition = "2024"
-license = "MIT"
-repository = "https://github.com/AndrewOfC/rust_flatbuffer_macros.git"
-homepage = "https://github.com/AndrewOfC/rust_flatbuffer_macros.git"
-documentation = "https://docs.rs/rust_flatbuffer_macros"
-description = "Macros for simplifying the building of flatbuffer messages"
-readme = "README.md"
-keywords = ["macros", "flatbuffer", "flatbuffers", "no_std", "serialization"]
-categories = ["rust-patterns", "encoding", "no-std"]
-include = ["src/**/*", "LICENSE", "README.md", "RELEASE_NOTES.md", "build.rs"]
-exclude = [
-    "tests/*"    # Exclude integration tests
-    ]
-[dependencies]
-flatbuffers = { version ="25.12.19", default-features = false }
-paste = "1.0.15"
-[dev-dependencies]
-rand = "0.10.0"
-[build-dependencies]
-flatbuffers-build = "0.2.4+flatc-25.12.19"
 
-[lib]
-doctest = false
+#
+# Create a container with flatc installed
+#
+FROM ubuntu:latest
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get update --fix-missing
+RUN apt-get install -y build-essential git sudo file rustup cmake
+RUN rustup default stable
+RUN mkdir /opt/build
+RUN sudo -u ubuntu rustup default stable
+RUN cd /opt/build && \
+    git clone https://github.com/google/flatbuffers.git && \
+    cd flatbuffers && \
+    git checkout v25.12.19 && \
+    mkdir release && \
+    cd release && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/flatbuffers .. && \
+    make -j `nproc` install && \
+    cd && \
+    rm -rf /opt/build
