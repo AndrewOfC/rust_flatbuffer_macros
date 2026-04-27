@@ -82,6 +82,52 @@ macro_rules! build_flatbuffer {
     } ;
 }
 
+/**
+ * Macro to create a macro that will build a flatbuffer with the common pattern:
+ * ```flatbuffer
+ *
+ *  table SubTable1 {
+ *      a: u32,
+ *      b: u32,
+ *  }
+ *
+ *  union Payload {
+ *      SubTable1,
+ *      SubTable2,
+ *  }
+ *
+ *   table Message {
+ *      payload: Payload ; // Note fieldname must be same as Union name in snake case
+ *      extradata: int32 ;
+ *  }
+ *
+ *  root_table: Message ;
+ * ```
+ * Invoking flatbuffer_builderbuilder
+ * ```ignore
+ * use rust_flatbuffer_macros::flatbuffer_builderbuilder ;
+ * flatbuffer_builderbuilder!($ Message, Payload) ;
+ *
+ *
+ * // will create a macro called build_Message_buffer that will build a prefixed buffer of type Message
+ * // with a payload containing a member of the Payload union.
+ *
+ *
+ * let payload = build_Message_buffer!(builder, SubTable1, a=1, b=2) ;
+ *    // OR
+ * let a = 1 ;
+ * let b = 2 ;
+ * let payload = build_Message_buffer!(builder, SubTable1, a, b) ;
+ *
+ * // other fields in the root table may be added as well
+ * let extradata = 123 ;
+ * let buf = build_Message_buffer!(builder, extradata=0 => SubTable1, a=0, b=1) ;
+ * ```
+ *
+ * @param $builder: The flatbuffer builder instance.
+ * @param $typ: The type for which the builder is being created.
+ * @param $($field:ident $(= $value:expr)?),+: Custom fields and their values.
+ */
 #[macro_export]
 macro_rules! flatbuffer_builderbuilder {
     ($DOLLAR:tt $root:ty, $union:ty) => {
