@@ -31,7 +31,7 @@ jobs:
     container:
       image: ghcr.io/andrewofc/rust-flatbuffer-macros-cicd
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Build
       run: cargo build 
     - name: Run tests
