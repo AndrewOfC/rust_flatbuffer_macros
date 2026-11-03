@@ -1,3 +1,4 @@
+[![Rust CI](https://github.com/AndrewOfC/rust_flatbuffer_macros/actions/workflows/ci-rust.yml/badge.svg?branch=master)](https://github.com/AndrewOfC/rust_flatbuffer_macros/actions/workflows/ci-rust.yml)
 # Overview
 
 A useful Rust macro that defines other Rust macros.

@@ -22,13 +22,29 @@
 #
 # SPDX short identifier: MIT
 
+## Container to build&test
+## obtain key from from github.com => Settings => Credentials => Personal Access Token
+## enable write:packages
+##
+## ```bash
+## docker build -t containername .
+## export GHCR_KEY=xxxxx
+## echo $GHCR_KEY | docker login ghcr.io -u USERNAME --password-stdin
+## docker tag containername  ghcr.io/username(lowercase)/containername
+## docker push ghcr.io/username(lowercase)/avxbuild-arm64
+## ```
+##
+##  Then enable repo or make container public:
+##     github.com => Packages
+
+
+
 #
 # Create a container with flatc installed
 #
 FROM ubuntu:latest
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get update --fix-missing
-RUN apt-get install -y build-essential git sudo file rustup cmake
+RUN apt update --fix-missing
+RUN apt install -y build-essential git sudo file rustup cmake
 RUN rustup default stable
 RUN mkdir /opt/build
 RUN sudo -u ubuntu rustup default stable

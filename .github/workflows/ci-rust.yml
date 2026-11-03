@@ -28,27 +28,10 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    container:
+      image: ghcr.io/andrewofc/rust-flatbuffer-macros-cicd
     steps:
-    - uses: actions/checkout@v4
-    - name: Install Rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: stable
-        override: true
-
-    - name: Install Flatc
-      run: |
-        git clone https://github.com/google/flatbuffers.git
-        cd flatbuffers
-        git checkout v25.12.19
-        mkdir release
-        cd release
-        cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/flatbuffers ..
-        make -j `nproc`
-        sudo make install
-        
+    - uses: actions/checkout@v7
     - name: Build
       run: cargo build 
     - name: Run tests
